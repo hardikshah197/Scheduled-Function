@@ -1,10 +1,12 @@
 const { google } = require('googleapis');
 
-async function addDataToSheet(email = "", event = "", message = "") {
-  console.log("Script started!");
-  // Replace the sheet ID and key file path with your own values
-  const sheetId = "1Dw7hlhh1Bq7RBtVJ3TJABmdgwnaQsQs7gycqYV4Ihw4";
-  const keyFilePath = "./config/keys.json"; // replace with the path to your key file
+const env = process.env.NODE_ENV || 'development';
+const { sheetId } = require("../config/config")[env]
+
+async function addDataToSheet(email, message = "") {
+  console.log("sheet updating script started!");
+  // Replace the key file path with your own values
+  const keyFilePath = "../assets/keys.json"; // replace with the path to your key file
 
   const date = new Date();
 
@@ -15,8 +17,7 @@ async function addDataToSheet(email = "", event = "", message = "") {
   });
 
   // Create the row of data to add
-  // const rowData = [email, event, date, message]; for Swing Auth API
-  const rowData = ["CHCHCHCHCHC", "Male", "Sanskrit"]
+  const rowData = [email, event, date, message]; // for Swing Auth API
 
   try {
     // Authorize the client
@@ -39,11 +40,11 @@ async function addDataToSheet(email = "", event = "", message = "") {
     // Send the request
     const response = await sheets.spreadsheets.values.append(request);
 
-    console.log('Data added to sheet at column:', response.data["tableRange"]);
-    console.log("Script ended!");
+    console.log('data added at column:', response.data["tableRange"]);
+    console.log("sheet updating script ends!");
   } catch (error) {
     console.log(error.response.data.error.errors)
   }
 }
 
-module.exports = { addDataToSheet };
+module.exports = { addDataToSheet }
